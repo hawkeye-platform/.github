@@ -1,0 +1,36 @@
+name: Publish NuGet
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Pack
+        run: |
+          dotnet pack \
+            -c Release \
+            -o artifacts \
+            -p:Version=${GITHUB_REF_NAME#v}
+
+      - name: Publish
+        run: |
+          dotnet nuget push "artifacts/*.nupkg" \
+            --api-key ${{ secrets.GITHUB_TOKEN }} \
+            --source https://nuget.pkg.github.com/hawkeye-platform/index.json
