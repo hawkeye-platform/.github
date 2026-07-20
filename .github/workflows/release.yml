@@ -39,6 +39,15 @@ jobs:
         with:
           dotnet-version: ${{ inputs.dotnet-version }}
 
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v3
+        with:
+          versionSpec: "6.x"
+
+      - name: Calculate Version
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v3
+
       - name: Restore
         run: dotnet restore ${{ inputs.project }}
 
@@ -47,7 +56,8 @@ jobs:
           dotnet build \
             ${{ inputs.project }} \
             --configuration ${{ inputs.configuration }} \
-            --no-restore
+            --no-restore \
+            /p:Version=${{ steps.gitversion.outputs.SemVer }}
 
       - name: Pack
         run: |
@@ -55,7 +65,8 @@ jobs:
             ${{ inputs.project }} \
             --configuration ${{ inputs.configuration }} \
             --no-build \
-            --output ./artifacts
+            --output ./artifacts \
+            /p:PackageVersion=${{ steps.gitversion.outputs.SemVer }}
 
       - name: Publish to GitHub Packages
         run: |
