@@ -81,7 +81,7 @@ jobs:
         run: |
           git config user.name "Pavel Buzakov"
           git config user.email "paulbuzakov@gmail.com"
-          git tag -a "v${{ steps.gitversion.outputs.SemVer }}" -m "Release: ${{ steps.gitversion.outputs.SemVer }}"
-          git push origin "v${{ steps.gitversion.outputs.SemVer }}"
+          git tag -f "v${{ steps.gitversion.outputs.SemVer }}" -m "Release: ${{ steps.gitversion.outputs.SemVer }}"
+          git push -f origin "v${{ steps.gitversion.outputs.SemVer }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
